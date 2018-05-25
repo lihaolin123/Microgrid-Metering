@@ -365,7 +365,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CORE;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\UCOSII\CONFIG;..\UCOSII\CORE;..\UCOSII\PORT;..\HARDWARE\LED;..\HARDWARE\OLED;..\MODBUS;..\MODBUS\modbus;..\MODBUS\port;..\MODBUS\modbus\include;..\MODBUS\modbus\rtu;..\MALLOC;..\HARDWARE\W25QXX;..\HARDWARE\SDIO;..\HARDWARE\SRAM;..\HARDWARE\SPI;..\HARDWARE\KEY;..\HARDWARE\RTC;..\HARDWARE\CS5464;..\HARDWARE\IWDG;..\FWLIB\inc;..\HARDWARE\EXTI;..\HARDWARE\STMFLASH</IncludePath>
+              <IncludePath>..\CORE;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\UCOSII\CONFIG;..\UCOSII\CORE;..\UCOSII\PORT;..\HARDWARE\LED;..\HARDWARE\OLED;..\MODBUS;..\MODBUS\modbus;..\MODBUS\port;..\MODBUS\modbus\include;..\MODBUS\modbus\rtu;..\MALLOC;..\HARDWARE\W25QXX;..\HARDWARE\SDIO;..\HARDWARE\SRAM;..\HARDWARE\SPI;..\HARDWARE\KEY;..\HARDWARE\RTC;..\HARDWARE\CS5464;..\HARDWARE\IWDG;..\FWLIB\inc;..\HARDWARE\EXTI;..\HARDWARE\STMFLASH;..\HARDWARE\TIMER</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -492,6 +492,11 @@
               <FileName>stmflash.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\STMFLASH\stmflash.c</FilePath>
+            </File>
+            <File>
+              <FileName>timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\TIMER\timer.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -782,13 +787,6 @@
         </Group>
         <Group>
           <GroupName>DOC</GroupName>
-          <Files>
-            <File>
-              <FileName>README.md</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\README.md</FilePath>
-            </File>
-          </Files>
         </Group>
       </Groups>
     </Target>

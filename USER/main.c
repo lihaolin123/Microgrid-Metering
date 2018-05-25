@@ -33,6 +33,8 @@
 #include "exti.h"
 #include "dc_cs5464.h" 
 #include "stdio.h"
+#include "timer.h"
+
 //==================== UCOSII任务设置 ====================================
 ///////////////START 任务///////////
 //设置任务优先级
@@ -354,10 +356,12 @@ void Initialization(void)
 	SSR_Init();				//固态继电器引脚初始化 
 	KEY_Init(); 			//初始化按键		
 	My_RTC_Init();		 	//初始化RTC
+	TIM3_Int_Init(65535,8400-1);//计时定时器10000
 	//PWR_PVD_Init();		//电压检测器PVD
 	OLED_ShowString(1,0,"AC...");
 	CS5464IOInit();			//CS5464引脚初始化
 	CS5464SPIInit();		//CS5464初始化
+	TIM_Cmd(TIM3,ENABLE);
 	OLED_ShowString(1,0,"DC.");
 	DC_CS5464_GPIO_Init();	//CS5464引脚初始化
 	OLED_ShowString(1,0,"DC..");
@@ -548,7 +552,7 @@ void CS5464_task(void *pdata)
 {
 //	u8 ac_get_falg=0;
 	u8 ac_cs5464Status[3]={0};
-	u8 ac_reg_value[3]={0};	
+	u8 ac_reg_value[3]={0};	 
 	while(1)
 	{	
 		ac_cs5464Status[0]=0;ac_cs5464Status[1]=0;ac_cs5464Status[2]=0;
@@ -568,6 +572,7 @@ void CS5464_task(void *pdata)
 //		}
 		if(ac_cs5464Status[0]&DRDY)
 		{
+			
 			#ifdef DEBUG_DOG
 			IWDG_Feed();					//喂狗
 			#endif
@@ -575,22 +580,24 @@ void CS5464_task(void *pdata)
 			AC_voltage=(UnsignedConver(ac_reg_value)*386.8f);		//RMS电压通道1
 			FloatToBinaryByU16Array(AC_voltage,&usRegInputBuf[0]);	
 			getRegister(I1RMS ,ac_reg_value);						
-			AC_current=(UnsignedConver(ac_reg_value)*16.1f);		//RMS电流通道1
+			AC_current=(UnsignedConver(ac_reg_value)*16.3f);		//RMS电流通道1//15.3？
 			FloatToBinaryByU16Array(AC_current,&usRegInputBuf[2]);		
 			getRegister(P1AVG,ac_reg_value);						
-			activePower=(ComplementConver(ac_reg_value)*6188.04f);		//有功功率通道1
+			activePower=(ComplementConver(ac_reg_value)*6304.84f);		//有功功率通道1
 			FloatToBinaryByU16Array(activePower,&usRegInputBuf[4]);
 			getRegister(Q1AVG,ac_reg_value);	
-			reactivePower=(ComplementConver(ac_reg_value)*6188.04f);	//无功功率通道1
+			reactivePower=(ComplementConver(ac_reg_value)*6304.84f);	//无功功率通道1
 			FloatToBinaryByU16Array(reactivePower,&usRegInputBuf[6]);	
 			getRegister(S1,ac_reg_value);		
-			apparentPower=(ComplementConver(ac_reg_value)*6188.04f);	//视在功率通道
+			apparentPower=(ComplementConver(ac_reg_value)*6304.84f);	//视在功率通道
 			FloatToBinaryByU16Array(apparentPower,&usRegInputBuf[8]);	
 			getRegister(PF1,ac_reg_value);		
 			powerFactor=ComplementConver(ac_reg_value);				//功率系数通道1
 			FloatToBinaryByU16Array(powerFactor,&usRegInputBuf[10]);
 			getRegister(EPULSE,ac_reg_value);	
-			float temp_power=(ComplementConver(ac_reg_value)*6188.04f*1.00064f/3600000.0f);
+			float time=(TIM3->CNT)*0.0001;
+			TIM3->CNT=0;
+			float temp_power=(ComplementConver(ac_reg_value)*6304.84f*time/3600000.0f);
 			ac_all_power.f=ac_all_power.f+temp_power;
 			if(RTC_TimeStruct.RTC_Hours>=peak_time_L&&RTC_TimeStruct.RTC_Hours<peak_time_H)
 			{
